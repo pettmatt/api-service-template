@@ -1,0 +1,20 @@
+{
+  "name": "api-service-template",
+  "version": "1.0.0",
+  "description": "Template for simple API service that tracks user's requests",
+  "main": "./src/app.js",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "express": "^4.18.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node",
+    "api",
+    "template"
+  ],
+  "author": "Petteri Mattila",
+  "license": "ISC"
+}
