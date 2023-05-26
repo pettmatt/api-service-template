@@ -17,6 +17,7 @@ export const register = (password) => {
 
             return response
         })
+        .catch((err) => err)
 
     return result
 }
@@ -26,11 +27,17 @@ export const authenticate = async (user) => {
     const password = user.password
 
     // Fetch the hash from DB
-    const dbUser = await databaseService.get("users", username)
+    const dbUser = await databaseService.get("users", { username })
 
-    const result = bcrypt.compare(password, dbUser.hash)
+    if (dbUser === null) return null
+
+    const result = await bcrypt.compare(password, dbUser.hash)
         .then((result) => result)
         .catch((err) => err)
 
-    return { success: result, user: { username: dbUser } }
+    return { success: result, user: { username: dbUser.username } }
+}
+
+export const deleteUser = async () => {
+
 }

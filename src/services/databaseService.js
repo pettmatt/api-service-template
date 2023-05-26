@@ -1,33 +1,50 @@
-import * as dotenv from "dotenv"
-import { MongoClient, ServerApiVersion } from "mongodb"
+import * as mongoDB from "./mongoDBService.js"
 
-dotenv.config()
-const uri = `mongodb+srv://admin:${ process.env.DATABASE_PASS }@${ process.env.DATABASE_CLUSTER_URL }/?retryWrites=true&w=majority`
-
-const connect = async (collectionName) => {
-    const client = new MongoClient(uri)
-    await client.connect()
-    const collection = client.db().collection(collectionName)
-    return collection
-}
-
-export const get = async (collectionName, value) => {
-    const collection = await connect(collectionName)
+export const get = async (collectionName, findObject) => {
+    const collection = await mongoDB.connect(collectionName)
 
     try {
-        const response = await collection.findOne({ username: value })
+        // Find object can be as simple as "{ username: value }"
+        const response = await collection.findOne(findObject)
         return response
     } catch (err) {
         return err
     }
 }
 
-export const post = async (user) => {
-    const collection = await connect("users")
+export const post = async (collectionName, insertObject) => {
+    const collection = await mongoDB.connect(collectionName)
 
     try {
-        const response = await collection.insertOne(user)
-        return { response, user }
+        // Specify which field contains an unique value
+        await collection.createIndex(
+            { username: 1 },
+            { unique: true, name: "unique_username_index" }
+        )
+        const response = await collection.insertOne(insertObject)
+        return { response, insertObject }
+    } catch (err) {
+        return err
+    }
+}
+
+export const update = async (collectionName, updateObject) => {
+    const collection = await mongoDB.connect(collectionName)
+
+    try {
+        const response = await collection.updateOne(updateObject)
+        return { response, updateObject }
+    } catch (err) {
+        return err
+    }
+}
+
+export const deleteRequest = async (collectionName, deleteObject) => {
+    const collection = await mongoDB.connect(collectionName)
+
+    try {
+        const response = await collection.deleteOne(deleteObject)
+        return { response, deleteObject }
     } catch (err) {
         return err
     }

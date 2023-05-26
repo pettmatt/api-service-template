@@ -1,34 +1,30 @@
-import * as dotenv from "dotenv"
-import { MongoClient, ServerApiVersion } from "mongodb"
+import { uid } from "uid"
+import * as databaseService from "./databaseService.js"
 
-dotenv.config()
-const uri = `mongodb+srv://admin:${ process.env.DATABASE_PASS }@${ process.env.DATABASE_CLUSTER_URL }/?retryWrites=true&w=majority`
-
-const connect = async (collectionName) => {
-    const client = new MongoClient(uri)
-    await client.connect()
-    const collection = client.db().collection(collectionName)
-    return collection
-}
-
-export const getApikey = async (collectionName, value) => {
-    const collection = await connect(collectionName)
-
-    try {
-        const response = await collection.findOne({ apikey: value })
-        return response
-    } catch (err) {
-        return err
+export const apiRequest = () => {
+    return {
+        message: "You made an API request successfully!"
     }
 }
 
-export const post = async (user) => {
-    const collection = await connect("apikeys")
+export const getApikey = (username) => {
+    return databaseService.get("apikey", username)
+}
 
-    try {
-        const response = await collection.insertOne(user)
-        return { response, user }
-    } catch (err) {
-        return err
-    }
+export const generateApikey = (username) => {
+    return databaseService.post("apikey", {
+        username,
+        apikey: uid(),
+        count: 0,
+        limit: 10
+    })
+}
+
+export const incrementRequests = (username, count) => {
+    // const apikey = await databaseService.get("apikey", username)
+    return databaseService.update("apikey", username, { count: count++ })
+}
+
+export const resetRequests = (username) => {
+    return databaseService.update("apikey", username, { count: 0 })
 }
