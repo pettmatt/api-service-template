@@ -32,7 +32,7 @@ export const update = async (collectionName, filter, updateObject) => {
     const collection = await mongoDB.connect(collectionName)
 
     try {
-        const response = await collection.updateOne(filter, { $set: updateObject })
+        const response = await collection.updateOne(filter, updateObject)
         return { response, updateObject }
     } catch (err) {
         return err

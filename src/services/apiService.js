@@ -34,14 +34,20 @@ export const generateApikey = (username) => {
 
 export const incrementRequests = (username, count) => {
     // const apikey = await databaseService.get("apikey", username)
-    return databaseService.update("apikey", { username }, { count: count++ })
+    return databaseService.update("apikey", { username }, { 
+        $inc: {
+            count: 1
+        }
+    })
 }
 
 export const resetApikey = (username) => {
     return databaseService.update("apikey", { username }, {
-        note: "API KEY HAS BEEN RESET",
-        apikey: uid(),
-        count: 0,
-        limit: 10
+        $set: {
+            note: "API KEY HAS BEEN RESET",
+            apikey: uid(),
+            count: 0,
+            limit: 10
+        }
     })
 }
