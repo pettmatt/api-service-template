@@ -28,11 +28,11 @@ export const post = async (collectionName, insertObject) => {
     }
 }
 
-export const update = async (collectionName, updateObject) => {
+export const update = async (collectionName, filter, updateObject) => {
     const collection = await mongoDB.connect(collectionName)
 
     try {
-        const response = await collection.updateOne(updateObject)
+        const response = await collection.updateOne(filter, { $set: updateObject })
         return { response, updateObject }
     } catch (err) {
         return err

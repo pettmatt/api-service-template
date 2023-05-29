@@ -36,6 +36,7 @@ app.get("/register/:password", async (req, res) => {
     const password = req.params.password
     const generatedUserDetails = await userService.register(password)
     console.log(generatedUserDetails)
+
     if (!generatedUserDetails.response.acknowledged)
         return res.status(500).json({ message: generatedUserDetails })
 
@@ -55,6 +56,9 @@ app.get("/:username/apikey/:password", async (req, res) => {
     // Fetch API details
     const apikey = await apiService.getApikey({ username: authentication.user.username })
 
+    console.log("APIKEY", apikey)
+    console.log("username", authentication)
+
     if (apikey === null)
         return res.status(200).json({ message: "Please create API key and try again.", apikey })
 
@@ -71,14 +75,18 @@ app.get("/apikey/generate/:username/:password", async (req, res) => {
         password: req.params.password
     })
 
-    if (authentication === null || !authentication.success)
-        return res.status(401).json({ message: "Authentication failed. Check if your username and password were correct." })
+    if (!authentication || authentication === null)
+        return res.status(401).json(
+            { message: "Authentication failed. Check if your username and password were correct." }
+        )
 
     // Generate API key
-    const result = await apiService.generateApikey({ username: req.params.username })
+    const result = await apiService.generateApikey(req.params.username)
 
     if (result.code === 11000)
-        return res.status(401).json({ message: "Cannot create new keys. Please reset the existing one." })
+        return res.status(401).json(
+            { message: "Cannot create new keys. Please reset the existing one." }
+        )
 
     res.status(200).json({
         message: "API key generated.",
@@ -88,10 +96,25 @@ app.get("/apikey/generate/:username/:password", async (req, res) => {
     })
 })
 
-app.get("/api/fetch/:apikey", (req, res) => {
-    const user = req.params.apikey
+app.get("/apikey/reset/:username/:password", async (req, res) => {
+    const authentication = await userService.authenticate({
+        username: req.params.username,
+        password: req.params.password
+    })
 
-    res.json({
+    if (!authentication || authentication === null)
+        return res.status(401).json(
+            { message: "Authentication failed. Check if your username and password were correct." }
+        )
+
+    // Generate API key
+    const result = await apiService.resetApikey(req.params.username)
+
+    res.status(200).json({
+        message: "API key has been reset.",
+        apikey: result.updateObject.apikey,
+        count: result.updateObject.count,
+        limit: result.updateObject.limit
     })
 })
 

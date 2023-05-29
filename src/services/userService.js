@@ -33,7 +33,14 @@ export const authenticate = async (user) => {
 
     const result = await bcrypt.compare(password, dbUser.hash)
         .then((result) => result)
-        .catch((err) => err)
+        .catch((err) => {
+            return {
+                success: false,
+                error: err
+            }
+        })
+
+    if (!result) return result
 
     return { success: result, user: { username: dbUser.username } }
 }
