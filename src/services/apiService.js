@@ -11,9 +11,15 @@ export const apiRequest = async (apikey = null) => {
         }
 
     const result = await databaseService.get("apikey", { apikey })
-    console.log("FINAL CHECK POINT", result)
+
+    if (result === null) 
+        return {
+            status: 401,
+            message: "Incorrect API key."
+        }
 
     return {
+        status: 200,
         message: "You made an API request successfully!"
     }
 }
@@ -32,7 +38,7 @@ export const generateApikey = (username) => {
     })
 }
 
-export const incrementRequests = (username, count) => {
+export const incrementRequests = (username) => {
     // const apikey = await databaseService.get("apikey", username)
     return databaseService.update("apikey", { username }, { 
         $inc: {

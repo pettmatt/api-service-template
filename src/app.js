@@ -20,16 +20,23 @@ app.get("/", (req, res) => {
                     </li>
                 </ul>
             </li>
-        <li>
-        Get API key: /{username}/apikey/{password}
-            <ul>
-                <li>
-                On success; returns api key with request details
-                </li>
-            </ul>
-        </li>
+            <li>
+            Get API key: /{username}/apikey/{password}
+                <ul>
+                    <li>
+                    On success; returns api key with request details
+                    </li>
+                </ul>
+            </li>
         </ul>
     `)
+})
+
+app.get("/api/request/:apikey", async (req, res) => {
+    const result = await apiService.apiRequest(req.params.apikey)
+
+    // Setting status code dynamically could make the code DRYer
+    res.status(result.status).json({ message: result.message })
 })
 
 app.get("/register/:password", async (req, res) => {
@@ -43,7 +50,7 @@ app.get("/register/:password", async (req, res) => {
     res.status(200).json({ message: "User registered", username: generatedUserDetails.insertObject.username })
 })
 
-app.get("/:username/apikey/:password", async (req, res) => {
+app.get("/user/:username/apikey/:password", async (req, res) => {
     // Authenticate user
     const authentication = await userService.authenticate({
         username: req.params.username,
@@ -56,9 +63,6 @@ app.get("/:username/apikey/:password", async (req, res) => {
     // Fetch API details
     const apikey = await apiService.getApikey({ username: authentication.user.username })
 
-    console.log("APIKEY", apikey)
-    console.log("username", authentication)
-
     if (apikey === null)
         return res.status(200).json({ message: "Please create API key and try again.", apikey })
 
@@ -67,6 +71,18 @@ app.get("/:username/apikey/:password", async (req, res) => {
         requests: apikey.requests.count,
         limit: apikey.requests.limit
     })
+})
+
+app.get("/user/:username", async (req, res) => {
+    const authentication = await userService.authenticate({
+        username: req.params.username,
+        password: req.params.password
+    })
+
+    if (authentication === null || !authentication.success)
+        return res.status(401).json({ message: "Authentication failed. Check if your username and password were correct." })
+
+    const result = await userService.getUserDetails({ username: authentication.user.username })
 })
 
 app.get("/apikey/generate/:username/:password", async (req, res) => {

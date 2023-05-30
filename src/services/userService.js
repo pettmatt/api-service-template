@@ -45,6 +45,10 @@ export const authenticate = async (user) => {
     return { success: result, user: { username: dbUser.username } }
 }
 
+export const getUserDetails = (username) => {
+    
+}
+
 export const deleteUser = async () => {
 
 }
