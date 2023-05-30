@@ -12,11 +12,21 @@ export const apiRequest = async (apikey = null) => {
 
     const result = await databaseService.get("apikey", { apikey })
 
-    if (result === null) 
+    if (result === null)
         return {
             status: 401,
             message: "Incorrect API key."
         }
+
+    console.log("REKLAJDSASLKD", result)
+    const goodToContinue = checkRequestCount(result)
+    if (!goodToContinue)
+        return {
+            status: 401,
+            message: "You have made too many API requests."
+        }
+
+    incrementRequests(result.username)
 
     return {
         status: 200,
@@ -38,15 +48,6 @@ export const generateApikey = (username) => {
     })
 }
 
-export const incrementRequests = (username) => {
-    // const apikey = await databaseService.get("apikey", username)
-    return databaseService.update("apikey", { username }, { 
-        $inc: {
-            count: 1
-        }
-    })
-}
-
 export const resetApikey = (username) => {
     return databaseService.update("apikey", { username }, {
         $set: {
@@ -56,4 +57,20 @@ export const resetApikey = (username) => {
             limit: 10
         }
     })
+}
+
+const incrementRequests = (username) => {
+    // const apikey = await databaseService.get("apikey", username)
+    return databaseService.update("apikey", { username }, { 
+        $inc: {
+            count: 1
+        }
+    })
+}
+
+const checkRequestCount = (apikeyDetails) => {
+    if (apikeyDetails.count >= apikeyDetails.limit)
+        return false
+    else 
+        return true
 }

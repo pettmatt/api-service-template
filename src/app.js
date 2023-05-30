@@ -21,10 +21,42 @@ app.get("/", (req, res) => {
                 </ul>
             </li>
             <li>
-            Get API key: /{username}/apikey/{password}
+            Generate API key: /apikey/generate/{username}/{password}
                 <ul>
                     <li>
-                    On success; returns api key with request details
+                    On success; returns API key with request details
+                    </li>
+                </ul>
+            </li>
+            <li>
+            Reset existing API key: /apikey/reset/{username}/{password}
+                <ul>
+                    <li>
+                    On success; returns a message
+                    </li>
+                </ul>
+            </li>
+            <li>
+            Get make an API request: /api/request/{apikey}
+                <ul>
+                    <li>
+                    On success; returns a message and increments the request count
+                    </li>
+                </ul>
+            </li>
+            <li>
+            Get user details: /user/{username}/{password}
+                <ul>
+                    <li>
+                    On success; returns user details, username and API key details 
+                    </li>
+                </ul>
+            </li>
+            <li>
+            Delete user: /user/{username}/delete/{password}
+                <ul>
+                    <li>
+                    On success; returns a message
                     </li>
                 </ul>
             </li>
