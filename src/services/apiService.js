@@ -18,7 +18,6 @@ export const apiRequest = async (apikey = null) => {
             message: "Incorrect API key."
         }
 
-    console.log("REKLAJDSASLKD", result)
     const goodToContinue = checkRequestCount(result)
     if (!goodToContinue)
         return {
@@ -60,7 +59,6 @@ export const resetApikey = (username) => {
 }
 
 const incrementRequests = (username) => {
-    // const apikey = await databaseService.get("apikey", username)
     return databaseService.update("apikey", { username }, { 
         $inc: {
             count: 1
