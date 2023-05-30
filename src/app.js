@@ -42,7 +42,6 @@ app.get("/api/request/:apikey", async (req, res) => {
 app.get("/register/:password", async (req, res) => {
     const password = req.params.password
     const generatedUserDetails = await userService.register(password)
-    console.log(generatedUserDetails)
 
     if (!generatedUserDetails.response.acknowledged)
         return res.status(500).json({ message: generatedUserDetails })

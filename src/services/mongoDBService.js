@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv"
-import { MongoClient, ServerApiVersion } from "mongodb"
+import { MongoClient } from "mongodb"
 dotenv.config()
 
 const uri = `mongodb+srv://admin:${ process.env.DATABASE_PASS }@${ process.env.DATABASE_CLUSTER_URL }/?retryWrites=true&w=majority`
