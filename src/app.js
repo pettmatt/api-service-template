@@ -73,7 +73,7 @@ app.get("/user/:username/apikey/:password", async (req, res) => {
     })
 })
 
-app.get("/user/:username", async (req, res) => {
+app.get("/user/:username/:password", async (req, res) => {
     const authentication = await userService.authenticate({
         username: req.params.username,
         password: req.params.password
@@ -82,7 +82,13 @@ app.get("/user/:username", async (req, res) => {
     if (authentication === null || !authentication.success)
         return res.status(401).json({ message: "Authentication failed. Check if your username and password were correct." })
 
-    const result = await userService.getUserDetails({ username: authentication.user.username })
+    // Because there is so little info about the user in users, the request is send to "apikey" collection
+    const result = await apiService.getApikey(authentication.user.username)
+
+    if (result === null)
+        return res.status(404).json({ message: "User not found." })
+
+    res.status(200).json(result)
 })
 
 app.get("/apikey/generate/:username/:password", async (req, res) => {
@@ -131,6 +137,30 @@ app.get("/apikey/reset/:username/:password", async (req, res) => {
         apikey: result.updateObject.apikey,
         count: result.updateObject.count,
         limit: result.updateObject.limit
+    })
+})
+
+app.get("/user/:username/delete/:password", async (req, res) => {
+    const authentication = await userService.authenticate({
+        username: req.params.username,
+        password: req.params.password
+    })
+
+    if (!authentication || authentication === null)
+        return res.status(401).json(
+            { message: "Authentication failed. Check if your username and password were correct." }
+        )
+
+    const result = await userService.deleteUser(req.params.username)
+
+    if (!result.user) 
+        res.status(401).json({
+            message: "Couldn't delete user",
+            response: result
+        })
+
+    res.status(200).json({
+        message: `User "${ req.params.username }" has been deleted.`
     })
 })
 

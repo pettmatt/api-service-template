@@ -45,10 +45,10 @@ export const authenticate = async (user) => {
     return { success: result, user: { username: dbUser.username } }
 }
 
-export const getUserDetails = (username) => {
-    
-}
-
-export const deleteUser = async () => {
-
+export const deleteUser = async (username) => {
+    // Why does delete need to affect apikey collection too?
+    // In my opinion, there is no reason to have an apikey if the user has been deleted.
+    const user = await databaseService.deleteRequest("users", { username })
+    const apikey = await databaseService.deleteRequest("apikey", { username })
+    return { user, apikey }
 }
