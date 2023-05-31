@@ -1,5 +1,5 @@
 import express from "express"
-import apikeyController from "../controllers/apikeyController.js"
+import * as apikeyController from "../controllers/apikeyController.js"
 
 const router = express.Router()
 
